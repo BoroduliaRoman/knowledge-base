@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Topic
+from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
 
 # Create your views here.
@@ -55,3 +55,21 @@ def new_entry(request, topic_id):
     # Show empty or isn't valid form
     content = {'topic': topic, 'form': form}
     return render(request, 'knowledge_logs/new_entry.html', content)
+
+def edit_entry(request, entry_id):
+    """Edit exist entry"""
+    entry = Entry.objects.get(id=entry_id)
+    topic = entry.topic
+
+    if request.method != 'POST':
+        # Current request; form fill data current entry
+        form = EntryForm(instance=entry)
+    else:
+        # Send data POST; Processing data
+        form = EntryForm(instance=entry, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('knowledge_logs:topic', topic_id=topic.id)
+
+    content = {'entry': entry, 'topic': topic, 'form': form}
+    return render(request, 'knowledge_logs/edit_entry.html', content)
