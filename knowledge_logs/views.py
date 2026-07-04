@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
 
@@ -8,12 +9,14 @@ def index(request):
     """Homepage app Knowledge Base"""
     return render(request, 'knowledge_logs/index.html')
 
+@login_required
 def topics(request):
     """Show topic list"""
     topics = Topic.objects.order_by('date_added')
     content = {'topics': topics}
     return render(request, 'knowledge_logs/topics.html', content)
 
+@login_required
 def topic(request, topic_id):
     """Show one topic and all notice"""
     topic = Topic.objects.get(id=topic_id)
@@ -21,6 +24,7 @@ def topic(request, topic_id):
     context = {'topic': topic, 'entries': entries}
     return render(request, 'knowledge_logs/topic.html', context)
 
+@login_required
 def new_topic(request):
     """Define new topic"""
     if request.method != 'POST':
@@ -37,6 +41,7 @@ def new_topic(request):
     context = {'form': form}
     return render(request, 'knowledge_logs/new_topic.html', context)
 
+@login_required
 def new_entry(request, topic_id):
     """Adding new entry by topic"""
     topic = Topic.objects.get(id=topic_id)
@@ -56,6 +61,7 @@ def new_entry(request, topic_id):
     content = {'topic': topic, 'form': form}
     return render(request, 'knowledge_logs/new_entry.html', content)
 
+@login_required
 def edit_entry(request, entry_id):
     """Edit exist entry"""
     entry = Entry.objects.get(id=entry_id)
